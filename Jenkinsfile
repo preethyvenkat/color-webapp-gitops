@@ -30,7 +30,7 @@ pipeline {
           '''
         }
       }
-    }}
+    }
 
     stage('Push Image') {
       steps {
@@ -42,7 +42,7 @@ pipeline {
       steps {
         script {
           sh '''
-	    git clone $MANIFEST_REPO manifests
+	           git clone $MANIFEST_REPO manifests
             cd manifests
             sed -i "s|image: .*|image: $ECR_REPO:$IMAGE_TAG|" deployment.yaml
             git config user.email "jenkins@example.com"
