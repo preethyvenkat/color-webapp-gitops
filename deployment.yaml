@@ -16,6 +16,6 @@ spec:
       - name: color-web
         image: hashicorp/http-echo
         args:
-          - "-text=<html><body style='background-color:#FF0000'><h1>Hello GitOps!</h1></body></html>"
+          - "-text=<html><body style='background-color:#FA8072'><h1>Hello GitOps!</h1></body></html>"
         ports:
         - containerPort: 5678
