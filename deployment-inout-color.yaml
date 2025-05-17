@@ -14,6 +14,8 @@ spec:
     spec:
       containers:
       - name: color-web
-        image: 141409473062.dkr.ecr.us-east-1.amazonaws.com/color-webapp/color-webapp:latest
+        image: hashicorp/http-echo
+        args:
+          - "-text=<html><body style='background-color:#008080'><h1>Hello GitOps!</h1></body></html>"
         ports:
-        - containerPort: 80
+        - containerPort: 5678
