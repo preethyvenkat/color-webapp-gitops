@@ -2,51 +2,13 @@ pipeline {
   agent any
 
   environment {
+    ECR_REPO = "your-account-id.dkr.ecr.us-east-1.amazonaws.com/your-repo"  // replace with your ECR repo URL
+    IMAGE_TAG = "latest"  // or dynamically set this (e.g. with a build number)
     AWS_REGION = "us-east-1"
-    ECR_REPO = "141409473062.dkr.ecr.us-east-1.amazonaws.com/color-webapp"
-    IMAGE_TAG = "v${BUILD_NUMBER}"
-    MANIFEST_REPO = "git@github.com:preethyvenkat/color-webapp-gitops.git"
+    MANIFEST_REPO = "git@github.com:your-org/your-gitops-repo.git"  // your GitOps repo SSH URL
   }
 
   stages {
-  /* stage('Install AWS CLI & Docker CLI') {
-    steps {
-      sh '''
-        # Install AWS CLI (ARM64) if not already installed
-        if ! command -v aws &> /dev/null; then
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
-          unzip -q -o awscliv2.zip
-          ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli
-        else
-         echo "AWS CLI already installed. Updating..."
-         curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
-         unzip -q -o awscliv2.zip
-         ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
-        fi
-
-       # Print versions for verification
-       aws --version
-       docker --version
-      '''
-    }
-   }
-   stage('Verify Tools') {
-     steps {
-     sh '''
-       echo "Checking CLI tools..."
-       echo $PATH && which aws
-       docker --version
-       kubectl version --client
-       eksctl version
-     '''
-    } 
-   }*/
-   stage('Build Docker Image') {
-      steps {
-        sh 'docker build -t $ECR_REPO:$IMAGE_TAG .'
-      }
-    }
-
     stage('Login to Amazon ECR') {
       steps {
         withCredentials([
@@ -71,9 +33,17 @@ pipeline {
       }
     }
 
-    stage('Push Docker Image to ECR') {
+    stage('Build and Push Multi-Arch Docker Image') {
       steps {
-        sh 'docker push $ECR_REPO:$IMAGE_TAG'
+        sh '''
+          docker buildx create --use --name mybuilder || true
+          docker buildx inspect --bootstrap
+
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t $ECR_REPO:$IMAGE_TAG \
+            --push .
+        '''
       }
     }
 
@@ -86,16 +56,18 @@ pipeline {
             git clone $MANIFEST_REPO manifests
             cd manifests
 
+            # Update the image tag in deployment.yaml
             sed -i "s|image: .*|image: $ECR_REPO:$IMAGE_TAG|" deployment.yaml
 
             git config user.email "jenkins@example.com"
             git config user.name "Jenkins"
-	    if git diff --quiet; then
-          	echo "No changes to commit"
+
+            if git diff --quiet; then
+              echo "No changes to commit"
             else
-		git add deployment.yaml
-            	git commit -m "Update image to $IMAGE_TAG"
-            	git push origin main
+              git add deployment.yaml
+              git commit -m "Update image to $IMAGE_TAG"
+              git push origin main
             fi
           '''
         }
