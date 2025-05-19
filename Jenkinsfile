@@ -67,6 +67,8 @@ pipeline {
             else
               git add deployment.yaml
               git commit -m "Update image to $IMAGE_TAG"
+               # Pull remote changes to avoid non-fast-forward error
+              git pull --rebase origin main
               git push origin main
             fi
           '''
