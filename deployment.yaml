@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: color-web
-        image: 141409473062.dkr.ecr.us-east-1.amazonaws.com/color-webapp:v3
+        image: 141409473062.dkr.ecr.us-east-1.amazonaws.com/color-webapp:v2
         ports:
         - containerPort: 80
