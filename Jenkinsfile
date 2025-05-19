@@ -1,3 +1,4 @@
+# Jenkinsfile 
 pipeline {
   agent any
 
@@ -9,12 +10,26 @@ pipeline {
   }
 
   stages {
+    stage('Install AWS CLI & Docker CLI') {
+      steps {
+        sh '''
+          # Install AWS CLI if not already installed
+          if ! command -v aws &> /dev/null; then
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip -q awscliv2.zip
+            sudo ./aws/install
+          fi
+
+          # Print versions for verification
+          aws --version
+          docker --version
+        '''
+      }
+    }
 
     stage('Build Docker Image') {
       steps {
-        script {
-          sh "docker build -t $ECR_REPO:$IMAGE_TAG ."
-        }
+        sh 'docker build -t $ECR_REPO:$IMAGE_TAG .'
       }
     }
 
@@ -27,46 +42,44 @@ pipeline {
             passwordVariable: 'AWS_SECRET_ACCESS_KEY'
           )
         ]) {
-          script {
-            sh """
-              aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-              aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-              aws configure set region $AWS_REGION
+          sh '''
+            mkdir -p ~/.aws
+            echo "[default]" > ~/.aws/credentials
+            echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
+            echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+            echo "[default]" > ~/.aws/config
+            echo "region=$AWS_REGION" >> ~/.aws/config
 
-              aws ecr get-login-password --region $AWS_REGION | \
-              docker login --username AWS --password-stdin ${ECR_REPO.split('/')[0]}
-            """
-          }
+            aws ecr get-login-password --region $AWS_REGION | \
+              docker login --username AWS --password-stdin ${ECR_REPO%%/*}
+          '''
         }
       }
     }
 
     stage('Push Docker Image to ECR') {
       steps {
-        script {
-          sh "docker push $ECR_REPO:$IMAGE_TAG"
-        }
+        sh 'docker push $ECR_REPO:$IMAGE_TAG'
       }
     }
 
     stage('Update Kubernetes Manifest in GitOps Repo') {
       steps {
         sshagent (credentials: ['github-ssh']) {
-          script {
-            sh """
-              git clone $MANIFEST_REPO manifests
-              cd manifests
+          sh '''
+            rm -rf manifests
+            git clone $MANIFEST_REPO manifests
+            cd manifests
 
-              sed -i "s|image: .*|image: $ECR_REPO:$IMAGE_TAG|" deployment.yaml
+            sed -i "s|image: .*|image: $ECR_REPO:$IMAGE_TAG|" deployment.yaml
 
-              git config user.email "jenkins@example.com"
-              git config user.name "Jenkins"
+            git config user.email "jenkins@example.com"
+            git config user.name "Jenkins"
 
-              git add deployment.yaml
-              git commit -m "Update image to $IMAGE_TAG"
-              git push origin main
-            """
-          }
+            git add deployment.yaml
+            git commit -m "Update image to $IMAGE_TAG"
+            git push origin main
+          '''
         }
       }
     }
