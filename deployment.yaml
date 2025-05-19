@@ -18,5 +18,5 @@ spec:
         ports:
         - containerPort: 80
         env:
-        - name: APP_COLOR
+        - name: COLOR
           value: "green"
