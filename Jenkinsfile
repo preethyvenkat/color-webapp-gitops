@@ -29,7 +29,7 @@ pipeline {
        docker --version
       '''
     }
-   }*/
+   }
    stage('Verify Tools') {
      steps {
      sh '''
@@ -40,7 +40,7 @@ pipeline {
        eksctl version
      '''
     } 
-   }
+   }*/
    stage('Build Docker Image') {
       steps {
         sh 'docker build -t $ECR_REPO:$IMAGE_TAG .'
