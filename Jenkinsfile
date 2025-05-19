@@ -55,6 +55,7 @@ pipeline {
             rm -rf manifests
             git clone $MANIFEST_REPO manifests
             cd manifests
+            git pull --rebase origin main
 
             sed -i "s|image: .*|image: $ECR_REPO:$IMAGE_TAG|" deployment.yaml
 
