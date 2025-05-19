@@ -10,18 +10,22 @@ RUN apt-get update && apt-get install -y \
     lsb-release \
     software-properties-common \
     sudo \
-    docker.io
+    docker.io && \
+    apt-get clean
 
 # Add Jenkins to docker group
 RUN usermod -aG docker jenkins
 
-# Install AWS CLI (arm64 compatible)
+# Install AWS CLI (ARM64 compatible)
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install && \
     rm -rf aws awscliv2.zip
 
-# Set Docker and AWS CLI in PATH
+# Optional: Verify installations
+RUN docker --version && aws --version
+
+# Set PATH (not strictly necessary for aws-cli since it installs into /usr/local/bin)
 ENV PATH="/usr/local/bin:$PATH"
 
 USER jenkins

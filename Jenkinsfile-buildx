@@ -9,16 +9,6 @@ pipeline {
   }
 
   stages {
-
-    stage('Build Docker Image') {
-      steps {
-        sh '''
-          echo "Building Docker image: $ECR_REPO:$IMAGE_TAG"
-          docker build -t $ECR_REPO:$IMAGE_TAG .
-        '''
-      }
-    }
-
     stage('Login to Amazon ECR') {
       steps {
         withCredentials([
@@ -30,18 +20,11 @@ pipeline {
         ]) {
           sh '''
             mkdir -p ~/.aws
-
-            cat > ~/.aws/credentials <<- EOM
-            [default]
-            aws_access_key_id=$AWS_ACCESS_KEY_ID
-            aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
-            EOM
-
-            cat > ~/.aws/config <<- EOM
-            [default]
-            region=$AWS_REGION
-            output=json
-            EOM
+            echo "[default]" > ~/.aws/credentials
+            echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
+            echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+            echo "[default]" > ~/.aws/config
+            echo "region=$AWS_REGION" >> ~/.aws/config
 
             aws ecr get-login-password --region $AWS_REGION | \
               docker login --username AWS --password-stdin ${ECR_REPO%%/*}
@@ -50,9 +33,17 @@ pipeline {
       }
     }
 
-    stage('Push Docker Image to ECR') {
+    stage('Build and Push Multi-Arch Docker Image') {
       steps {
-        sh 'docker push $ECR_REPO:$IMAGE_TAG'
+        sh '''
+          docker buildx create --use --name mybuilder || true
+          docker buildx inspect --bootstrap
+
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t $ECR_REPO:$IMAGE_TAG \
+            --push .
+        '''
       }
     }
 
@@ -65,10 +56,13 @@ pipeline {
             git clone $MANIFEST_REPO manifests
             cd manifests
 
+            git checkout main
+            git pull --rebase origin main
+
             sed -i "s|image: .*|image: $ECR_REPO:$IMAGE_TAG|" deployment.yaml
 
-            git config user.email "preevenkat@gmail.com"
-            git config user.name "Preethy Venkat"
+            git config user.email "jenkins@example.com"
+            git config user.name "Jenkins"
 
             if git diff --quiet; then
               echo "No changes to commit"
