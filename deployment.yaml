@@ -17,3 +17,6 @@ spec:
         image: 141409473062.dkr.ecr.us-east-1.amazonaws.com/color-webapp:v2
         ports:
         - containerPort: 80
+        env:
+        - name: APP_COLOR
+          value: "green"
