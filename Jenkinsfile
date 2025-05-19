@@ -9,14 +9,14 @@ pipeline {
   }
 
   stages {
-    stage('Install AWS CLI & Docker CLI') {
+       stage('Install AWS CLI & Docker CLI') {
       steps {
         sh '''
-          # Install AWS CLI if not already installed
+          # Install AWS CLI if not already installed (ARM-compatible)
           if ! command -v aws &> /dev/null; then
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
             unzip -q -o awscliv2.zip
-            ./aws/install
+            ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli
           fi
 
           # Print versions for verification
@@ -24,8 +24,8 @@ pipeline {
           docker --version
         '''
       }
-    }
-    stage('Build Docker Image') {
+   } 
+   stage('Build Docker Image') {
       steps {
         sh 'docker build -t $ECR_REPO:$IMAGE_TAG .'
       }
