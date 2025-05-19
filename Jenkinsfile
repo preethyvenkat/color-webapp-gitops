@@ -18,36 +18,27 @@ pipeline {
         '''
       }
     }
-
     stage('Login to Amazon ECR') {
-      steps {
-        withCredentials([
-          usernamePassword(
-            credentialsId: 'aws-creds',
+  	steps {
+    	  withCredentials([
+           usernamePassword(
+            credentialsId: 'aws-creds',  // your Jenkins AWS creds ID
             usernameVariable: 'AWS_ACCESS_KEY_ID',
             passwordVariable: 'AWS_SECRET_ACCESS_KEY'
-          )
-        ]) {
+           )
+          ]) {
           sh '''
             mkdir -p ~/.aws
+            echo "[default]" > ~/.aws/credentials
+            echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
+            echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+            echo "[default]" > ~/.aws/config
+            echo "region=us-east-1" >> ~/.aws/config
 
-            cat > ~/.aws/credentials <<- EOM
-            [default]
-            aws_access_key_id=$AWS_ACCESS_KEY_ID
-            aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
-            EOM
-
-            cat > ~/.aws/config <<- EOM
-            [default]
-            region=$AWS_REGION
-            output=json
-            EOM
-
-            aws ecr get-login-password --region $AWS_REGION | \
-              docker login --username AWS --password-stdin ${ECR_REPO%%/*}
-          '''
+            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 141409473062.dkr.ecr.us-east-1.amazonaws.com
+      '''
+          }
         }
-      }
     }
 
     stage('Push Docker Image to ECR') {
