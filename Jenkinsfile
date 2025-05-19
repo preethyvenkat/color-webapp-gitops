@@ -15,7 +15,7 @@ pipeline {
           # Install AWS CLI if not already installed
           if ! command -v aws &> /dev/null; then
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip -q awscliv2.zip
+            unzip -q -o awscliv2.zip
             sudo ./aws/install
           fi
 
@@ -25,7 +25,6 @@ pipeline {
         '''
       }
     }
-
     stage('Build Docker Image') {
       steps {
         sh 'docker build -t $ECR_REPO:$IMAGE_TAG .'
