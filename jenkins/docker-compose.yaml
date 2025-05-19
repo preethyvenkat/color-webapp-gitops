@@ -2,17 +2,18 @@ version: '3.8'
 
 services:
   jenkins:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
     container_name: jenkins
-    restart: unless-stopped
-    user: root
-    privileged: true
     ports:
       - "8080:8080"
       - "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock  # Share Docker daemon with container
+      - /var/run/docker.sock:/var/run/docker.sock
+    user: root
+    restart: unless-stopped
 
 volumes:
   jenkins_home:
