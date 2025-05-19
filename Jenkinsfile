@@ -2,10 +2,10 @@ pipeline {
   agent any
 
   environment {
-    ECR_REPO = "your-account-id.dkr.ecr.us-east-1.amazonaws.com/your-repo"  // replace with your ECR repo URL
-    IMAGE_TAG = "latest"  // or dynamically set this (e.g. with a build number)
     AWS_REGION = "us-east-1"
-    MANIFEST_REPO = "git@github.com:your-org/your-gitops-repo.git"  // your GitOps repo SSH URL
+    ECR_REPO = "141409473062.dkr.ecr.us-east-1.amazonaws.com/color-webapp"
+    IMAGE_TAG = "v${BUILD_NUMBER}"
+    MANIFEST_REPO = "git@github.com:preethyvenkat/color-webapp-gitops.git"
   }
 
   stages {
@@ -56,7 +56,9 @@ pipeline {
             git clone $MANIFEST_REPO manifests
             cd manifests
 
-            # Update the image tag in deployment.yaml
+            git checkout main
+            git pull --rebase origin main
+
             sed -i "s|image: .*|image: $ECR_REPO:$IMAGE_TAG|" deployment.yaml
 
             git config user.email "jenkins@example.com"
@@ -67,8 +69,6 @@ pipeline {
             else
               git add deployment.yaml
               git commit -m "Update image to $IMAGE_TAG"
-               # Pull remote changes to avoid non-fast-forward error
-              git pull --rebase origin main
               git push origin main
             fi
           '''
