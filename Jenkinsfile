@@ -34,7 +34,7 @@ pipeline {
      steps {
      sh '''
        echo "Checking CLI tools..."
-       aws --version
+       echo $PATH && which aws
        docker --version
        kubectl version --client
        eksctl version
