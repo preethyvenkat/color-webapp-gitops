@@ -9,7 +9,7 @@ pipeline {
   }
 
   stages {
-   stage('Install AWS CLI & Docker CLI') {
+  /* stage('Install AWS CLI & Docker CLI') {
     steps {
       sh '''
         # Install AWS CLI (ARM64) if not already installed
@@ -29,6 +29,17 @@ pipeline {
        docker --version
       '''
     }
+   }*/
+   stage('Verify Tools') {
+     steps {
+     sh '''
+       echo "Checking CLI tools..."
+       aws --version
+       docker --version
+       kubectl version --client
+       eksctl version
+     '''
+    } 
    }
    stage('Build Docker Image') {
       steps {
