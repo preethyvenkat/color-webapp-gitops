@@ -8,4 +8,5 @@ COPY entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+# Set entrypoint using shell so it runs properly
+ENTRYPOINT ["/bin/sh", "/entrypoint.sh"]
