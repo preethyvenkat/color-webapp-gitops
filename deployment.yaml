@@ -14,9 +14,9 @@ spec:
     spec:
       containers:
       - name: color-web
-        image: preethyvenkat1122/color-webapp:v2
+        image: preethyvenkat1122/color-webapp:v3
         ports:
         - containerPort: 80
         env:
         - name: COLOR
-          value: "#4169E1"
+          value: "#FFBF00"
