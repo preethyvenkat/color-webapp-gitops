@@ -6,6 +6,7 @@ spec:
   metrics:
   - name: pod-health
     interval: 10s
+    count: 3
     successCondition: result == 1
     failureCondition: result != 1
     provider:
@@ -19,3 +20,4 @@ spec:
                 command: ["/bin/sh", "-c"]
                 args: ["curl -s http://color-web-preview && echo 1 || echo 0"]
               restartPolicy: Never
+
