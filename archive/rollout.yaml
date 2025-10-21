@@ -9,6 +9,9 @@ spec:
       activeService: color-web
       previewService: color-web-preview
       autoPromotionEnabled: false
+      prePromotionAnalysis:
+        templates:
+        - templateName: preview-pod-health
   selector:
     matchLabels:
       app: color-web

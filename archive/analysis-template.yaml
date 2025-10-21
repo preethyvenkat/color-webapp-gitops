@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: preview-pod-health
+spec:
+  metrics:
+  - name: pod-health
+    interval: 10s
+    successCondition: result == 1
+    failureCondition: result != 1
+    provider:
+      job:
+        spec:
+          template:
+            spec:
+              containers:
+              - name: check
+                image: curlimages/curl
+                command: ["/bin/sh", "-c"]
+                args: ["curl -s http://color-web-preview && echo 1 || echo 0"]
+              restartPolicy: Never
