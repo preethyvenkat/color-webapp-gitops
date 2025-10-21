@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: color-web  # Active service
+  name: color-web-active  # Active service
 spec:
   selector:
     app: color-web
