@@ -1,7 +1,18 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: color-web
+  name: color-web  # Active service
+spec:
+  selector:
+    app: color-web
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: color-web-preview  # Preview service
 spec:
   selector:
     app: color-web
