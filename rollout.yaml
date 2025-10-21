@@ -16,6 +16,7 @@ spec:
   selector:
     matchLabels:
       app: color-web
+      version: green
   template:
     metadata:
       labels:
