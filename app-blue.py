@@ -1,18 +1,16 @@
+
 from flask import Flask
 import os
 
 app = Flask(__name__)
-#yellow
-#color = os.getenv("COLOR", "#FFBF00")
-#blue
-color = os.getenv("COLOR", "#007BFF")
+color = os.getenv("COLOR", "#0000FF")
 
 @app.route("/")
 def home():
     return f"""
     <html>
       <body style='background-color: {color};'>
-        <h1>Color-changing app deployed by Argo CD + Argo rollout, Hello from GitOps!</h1>
+        <h1>Blue app deployed by Argo CD, Hello from GitOps!</h1>
       </body>
     </html>
     """

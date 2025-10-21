@@ -1,3 +1,4 @@
+
 apiVersion: argoproj.io/v1alpha1
 kind: AnalysisTemplate
 metadata:
@@ -20,4 +21,3 @@ spec:
                 command: ["/bin/sh", "-c"]
                 args: ["curl -s http://color-web-preview && echo 1 || echo 0"]
               restartPolicy: Never
-

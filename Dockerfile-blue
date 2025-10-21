@@ -4,8 +4,8 @@ FROM python:3.9-slim
 # Set working directory
 WORKDIR /app
 
-# Copy the green app file
-COPY app-green.py ./app.py
+# Copy the blue app file
+COPY app-blue.py ./app.py
 
 # Install Flask
 RUN pip install flask
@@ -15,3 +15,4 @@ EXPOSE 80
 
 # Run the application
 CMD ["python", "app.py"]
+

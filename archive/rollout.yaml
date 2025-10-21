@@ -1,3 +1,4 @@
+
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
@@ -23,10 +24,9 @@ spec:
     spec:
       containers:
         - name: color-web
-          image: preethyvenkat1122/color-webapp:v5
+          image: preethyvenkat1122/color-webapp:v7
           ports:
             - containerPort: 8081
           env:
             - name: COLOR
-              value: "#28A745"  # green
-              #value: "#007BFF" # blue
+              value: "#28A745" # green
