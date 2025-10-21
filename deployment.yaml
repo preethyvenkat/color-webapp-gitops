@@ -19,6 +19,6 @@ spec:
         - containerPort: 80
         env:
           - name: COLOR
-            value: "#FFBF00"   # yellow
-          # value: "#007BFF"  # blue
+          # value: "#FFBF00"   # yellow
+            value: "#007BFF"  # blue
           
