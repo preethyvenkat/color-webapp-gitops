@@ -6,9 +6,9 @@ metadata:
 spec:
  selector:
    app: color-web
-   version: blue   # matches initial Rollout pod labels
+   version: blue       # matches blue pod labels
  ports:
-   - port: 80
+   - port: 8081        # must match Flask app containerPort
      targetPort: 8081
  type: NodePort
 ---
@@ -19,9 +19,9 @@ metadata:
 spec:
  selector:
    app: color-web
-   version: green  # placeholder for future green preview
+   version: green      # placeholder for future green
  ports:
-   - port: 80
+   - port: 8081        # must match Flask app containerPort
      targetPort: 8081
  type: NodePort
 ---
@@ -36,19 +36,16 @@ spec:
      activeService: color-web-active
      previewService: color-web-preview
      autoPromotionEnabled: false
-     # Analysis will be applied only when green preview pods exist
-     prePromotionAnalysis:
-       templates:
-         - templateName: preview-pod-health
+     # AnalysisTemplate will run only for green later
  selector:
    matchLabels:
      app: color-web
-     version: blue   # initial active version
+     version: blue       # initial active version
  template:
    metadata:
      labels:
        app: color-web
-       version: blue   # initial active version
+       version: blue       # initial active version
    spec:
      containers:
        - name: color-web
@@ -58,8 +55,6 @@ spec:
          env:
            - name: COLOR
              value: "#0000FF"   # blue
-             # value: "#FFFF00" # yellow
-             # value: "#28A745" # green
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: AnalysisTemplate
@@ -81,5 +76,5 @@ spec:
                  - name: check
                    image: curlimages/curl
                    command: ["/bin/sh", "-c"]
-                   args: ["curl -s http://color-web-preview:80 && echo 1 || echo 0"]
+                   args: ["curl -s http://color-web-preview:8081 && echo 1 || echo 0"]
                restartPolicy: Never
