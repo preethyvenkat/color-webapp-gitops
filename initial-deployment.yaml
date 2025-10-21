@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: color-web
-          image: preethyvenkat1122/color-webapp:v6
+          image: preethyvenkat1122/color-webapp:v6.1
           ports:
             - containerPort: 8081
           env:
