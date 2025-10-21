@@ -1,3 +1,4 @@
+
 ---
 apiVersion: v1
 kind: Service
@@ -6,26 +7,23 @@ metadata:
 spec:
  selector:
    app: color-web
-   version: green
+   version: green   # green preview pods
  ports:
-   - port: 8081
+   - port: 80
      targetPort: 8081
  type: NodePort
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
- name: color-web
+ name: color-web-green
 spec:
  replicas: 1
  strategy:
    blueGreen:
-     activeService: color-web-active   # currently pointing to blue
+     activeService: color-web-active   # still points to blue
      previewService: color-web-preview
-     autoPromotionEnabled: false
-     prePromotionAnalysis:
-       templates:
-         - templateName: preview-pod-health
+     autoPromotionEnabled: false       # manual promotion
  selector:
    matchLabels:
      app: color-web
@@ -43,27 +41,4 @@ spec:
            - containerPort: 8081
          env:
            - name: COLOR
-             value: "#28A745"   # green
----
-apiVersion: argoproj.io/v1alpha1
-kind: AnalysisTemplate
-metadata:
- name: preview-pod-health
-spec:
- metrics:
-   - name: pod-health
-     interval: 10s
-     count: 3
-     successCondition: result == 1
-     failureCondition: result != 1
-     provider:
-       job:
-         spec:
-           template:
-             spec:
-               containers:
-                 - name: check
-                   image: curlimages/curl
-                   command: ["/bin/sh", "-c"]
-                   args: ["curl -s http://color-web-preview:8081 && echo 1 || echo 0"]
-               restartPolicy: Never
+             value: "#28A745"  # green
