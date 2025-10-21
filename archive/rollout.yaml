@@ -6,7 +6,7 @@ spec:
   replicas: 1
   strategy:
     blueGreen:
-      activeService: color-web
+      activeService: color-web-active
       previewService: color-web-preview
       autoPromotionEnabled: false
       prePromotionAnalysis:
