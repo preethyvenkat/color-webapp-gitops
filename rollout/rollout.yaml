@@ -3,7 +3,7 @@ kind: Rollout
 metadata:
   name: color-web
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     blueGreen:
       activeService: color-web
