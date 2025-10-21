@@ -28,5 +28,5 @@ spec:
             - containerPort: 8081
           env:
             - name: COLOR
-            value: "#28A745"  # green
-            #value: "#007BFF" # blue
+              value: "#28A745"  # green
+              #value: "#007BFF" # blue
