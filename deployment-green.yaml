@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: color-web-green
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: color-web-green
+  template:
+    metadata:
+      labels:
+        app: color-web-green
+    spec:
+      containers:
+      - name: color-web-green
+        image: preethyvenkat1122/color-webapp:v5
+        ports:
+        - containerPort: 80
+        env:
+        - name: COLOR
+          value: "#28A745"  # green

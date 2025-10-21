@@ -2,9 +2,8 @@ apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
   name: color-web
-  namespace: default
 spec:
-  replicas: 1
+  replicas: 2
   strategy:
     blueGreen:
       activeService: color-web-active
@@ -20,10 +19,9 @@ spec:
     spec:
       containers:
       - name: color-web
-        image: preethyvenkat1122/color-webapp:v1
+        image: preethyvenkat1122/color-webapp:v5
         ports:
         - containerPort: 80
         env:
         - name: COLOR
-          value: "#FFBF00"
-
+          value: "#28A745"

@@ -2,10 +2,8 @@ from flask import Flask
 import os
 
 app = Flask(__name__)
-#yellow
 #color = os.getenv("COLOR", "#FFBF00")
-#blue
-color = os.getenv("COLOR", "#007BFF")
+color = os.getenv("COLOR", "#28A745")
 
 @app.route("/")
 def home():
