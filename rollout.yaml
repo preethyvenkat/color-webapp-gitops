@@ -20,6 +20,6 @@ spec:
     spec:
       containers:
         - name: color-webapp
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "preethyvenkat1122/color-webapp:v6.1"
           ports:
-            - containerPort: {{ .Values.service.port }}
+            - containerPort: 8081
