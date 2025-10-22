@@ -1,0 +1,25 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: color-webapp
+spec:
+  replicas: 1
+  strategy:
+    blueGreen:
+      activeService: color-webapp-active
+      previewService: color-webapp-preview
+      autoPromotionEnabled: false
+  selector:
+    matchLabels:
+      app: color-webapp
+  template:
+    metadata:
+      labels:
+        app: color-webapp
+    spec:
+      containers:
+        - name: color-webapp
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.service.port }}

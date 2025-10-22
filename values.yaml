@@ -1,0 +1,10 @@
+
+
+image:
+  repository: preethyvenkat1122/color-webapp
+  tag: v6.1  # Change to v7.1 in commit 2
+
+service:
+  name: color-webapp
+  port: 8081
+
